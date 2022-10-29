@@ -1,0 +1,9 @@
+DEBUG=1
+DJANGO_ALLOWED_HOSTS=*
+
+SQL_ENGINE=django.db.backends.postgresql
+DB_NAME=hello_django_dev
+DB_USER=hello_django
+DB_PASS=hello_django
+DB_HOST=db
+DB_PORT=5432
