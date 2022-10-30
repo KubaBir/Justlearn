@@ -1,6 +1,7 @@
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext as _
 from rest_framework import serializers
+from core.models import Student, Teacher
 
 
 
@@ -15,6 +16,14 @@ class UserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         """Create and return a user with encrypted password"""
+        is_student = validated_data['is_student']
+        is_teacher = validated_data['is_teacher']
+        user = get_user_model().objects.create_user(**validated_data)
+        if is_student:
+            Student.objects.create(user=user)
+        if is_teacher:
+            Teacher.objects.create(user=user)
+
         return get_user_model().objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
