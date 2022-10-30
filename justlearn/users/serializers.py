@@ -3,19 +3,14 @@ from django.utils.translation import gettext as _
 from rest_framework import serializers
 
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object"""
-    filmweb_nick = serializers.CharField(
-        allow_null=True, required=False)
-
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'name', 'filmweb_nick', 'id']
-        read_only_fields = ['id']
+        fields = ['id','email', 'password', 'name','is_student','is_teacher']
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 5},
-            'filmweb_nick': {'allow_null': True, 'required': False},
-            'id': {'allow_null': True, 'required': False}
         }
 
     def create(self, validated_data):
@@ -54,4 +49,4 @@ class AuthTokenSerializer(serializers.Serializer):
             msg = _('Unable to authenticate with provided credentials')
             raise serializers.ValidationError(msg, code='authorization')
         attrs['user'] = user
-        return 
+        return attrs

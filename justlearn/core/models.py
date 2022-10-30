@@ -4,6 +4,9 @@ from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
 from pyexpat import model
+from django.db.models.signals import post_save
+
+from django.dispatch import receiver
 
 
 # Create your models here.
@@ -65,9 +68,9 @@ class Skill(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     skills = models.ManyToManyField(Skill)
-    github_link = models.URLField(Null = True)
-    linkedin_link = models.URLField(Null = True)
-    description = models.TextField(max_length = 510)
+    github_link = models.URLField(blank = True, null = True)
+    linkedin_link = models.URLField(blank = True, null = True)
+    description = models.TextField(max_length = 510, default = '')
 
     def __str__(self):
         return self.user
@@ -77,9 +80,9 @@ class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Skills connected with proficiency at which they are
     skills = models.ManyToManyField(Skill)
-    github_link = models.URLField(Null = True)
-    linkedin_link = models.URLField(Null = True)
-    description = models.TextField(max_length = 510)
+    github_link = models.URLField(blank = True, null = True)
+    linkedin_link = models.URLField(blank = True, null =True)
+    description = models.TextField(max_length = 510, default = '')
     #jak najlepiej zrobic zeby rating sie updatowal po tym jak ktos wydaje opinie
     rating = models.FloatField(default = 0) 
 
@@ -87,12 +90,12 @@ class Teacher(models.Model):
         return self.user
 
 class Advertisement(models.Model):
-    #przy pomocy nested serializera zrobimy zeby w ogloszeniach pojawial sie tez rating, skillset, opis, link do githuba nauczyciela(?).
+    # na ogloszeniu link z przekierowaniem na konto nauczyciela
     teacher = models.ForeignKey(Teacher, on_delete = models.CASCADE)
-    description = models.TextField(max_length = 510)
+    description = models.TextField(max_length = 510, default = '')
 
 class Problem(models.Model):
-    # tak samo jak wyzej wyswietlimy cos wiecej przy pomocy nested serializera
+    #na problemie link z przekierowaniem na konto ucznia
     student = models.ForeignKey(Student, on_delete = models.CASCADE)
     description = models.TextField(max_length = 510)
 
@@ -100,19 +103,19 @@ class Problem(models.Model):
 # oferty jak student odpowiada na ogloszenie i jak nauczyciel odpowiada na problem studenta z oferta wspolpracy
 class Offer(models.Model):
     name = models.CharField(max_length=255)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, Null = True)
-    teacher = models.ForeignKey(Teacher,on_delete = models.DO_NOTHING, Null = True)
-    advertisement = models.ForeignKey(Advertisement, on_delete = models.CASCADE, Null = True)
-    problem  = models.ForeignKey(Problem, on_delete = models.CASCADE, Null = True )
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null = True)
+    teacher = models.ForeignKey(Teacher,on_delete = models.DO_NOTHING, null = True)
+    advertisement = models.ForeignKey(Advertisement, on_delete = models.CASCADE, null = True)
+    problem  = models.ForeignKey(Problem, on_delete = models.CASCADE, null = True )
 
 
 
 class Lessons(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    duration = models.DurationField()
-    date = models.DateTimeField()
-    meeting_link = models.URLField(Null = True)
+    duration = models.IntegerField(default = 60)
+    date = models.DateTimeField(null = True )
+    meeting_link = models.URLField(null = True)
 
 class Message(models.Model):
     author = models.ForeignKey(User, on_delete = models.CASCADE)
@@ -122,3 +125,12 @@ class Message(models.Model):
 class Chat(models.Model):
     participants = models.ManyToManyField(User)
     messages = models.ManyToManyField(Message, blank = True)
+
+
+
+@receiver(post_save, sender = User)
+def ProfileCreator(sender, instance= None, **kwargs):
+    if instance.is_student:
+        Student.objects.create(user = instance)
+    if instance.is_teacher:
+        Teacher.objects.create(user = instance)
