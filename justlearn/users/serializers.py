@@ -1,3 +1,4 @@
+from core.models import Student, Teacher
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext as _
 from rest_framework import serializers
@@ -5,22 +6,26 @@ from rest_framework import serializers
 
 class UserSerializer(serializers.ModelSerializer):
     """Serializer for the user object"""
-    filmweb_nick = serializers.CharField(
-        allow_null=True, required=False)
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'name', 'filmweb_nick', 'id']
+        fields = ['email', 'password', 'name']
         read_only_fields = ['id']
         extra_kwargs = {
             'password': {'write_only': True, 'min_length': 5},
-            'filmweb_nick': {'allow_null': True, 'required': False},
             'id': {'allow_null': True, 'required': False}
         }
 
     def create(self, validated_data):
-        """Create and return a user with encrypted password"""
-        return get_user_model().objects.create_user(**validated_data)
+        is_student = validated_data['is_student']
+        is_teacher = validated_data['is_teacher']
+        user = get_user_model().objects.create_user(**validated_data)
+        if is_student:
+            Student.objects.create(user=user)
+        if is_teacher:
+            Teacher.objects.create(user=user)
+
+        return user
 
     def update(self, instance, validated_data):
         """Update and return user."""
@@ -49,9 +54,9 @@ class AuthTokenSerializer(serializers.Serializer):
             username=email,
             password=password,
         )
-        
+
         if not user:
             msg = _('Unable to authenticate with provided credentials')
             raise serializers.ValidationError(msg, code='authorization')
         attrs['user'] = user
-        return 
+        return
