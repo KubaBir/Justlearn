@@ -64,6 +64,10 @@ class Skill(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    skills = models.ManyToManyField(Skill)
+    github_link = models.URLField(Null = True)
+    linkedin_link = models.URLField(Null = True)
+    description = models.TextField(max_length = 510)
 
     def __str__(self):
         return self.user
@@ -73,19 +77,48 @@ class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Skills connected with proficiency at which they are
     skills = models.ManyToManyField(Skill)
+    github_link = models.URLField(Null = True)
+    linkedin_link = models.URLField(Null = True)
+    description = models.TextField(max_length = 510)
+    #jak najlepiej zrobic zeby rating sie updatowal po tym jak ktos wydaje opinie
+    rating = models.FloatField(default = 0) 
 
     def __str__(self):
         return self.user
 
+class Advertisement(models.Model):
+    #przy pomocy nested serializera zrobimy zeby w ogloszeniach pojawial sie tez rating, skillset, opis, link do githuba nauczyciela(?).
+    teacher = models.ForeignKey(Teacher, on_delete = models.CASCADE)
+    description = models.TextField(max_length = 510)
+
+class Problem(models.Model):
+    # tak samo jak wyzej wyswietlimy cos wiecej przy pomocy nested serializera
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    description = models.TextField(max_length = 510)
 
 # Na bazie ofert mozna robic chaty, tak samo na bazie korepetycji
+# oferty jak student odpowiada na ogloszenie i jak nauczyciel odpowiada na problem studenta z oferta wspolpracy
 class Offer(models.Model):
     name = models.CharField(max_length=255)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    teacher = models.ForeignKey(
-        Teacher, null=True, blank=True, on_delete=models.DO_NOTHING)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, Null = True)
+    teacher = models.ForeignKey(Teacher,on_delete = models.DO_NOTHING, Null = True)
+    advertisement = models.ForeignKey(Advertisement, on_delete = models.CASCADE, Null = True)
+    problem  = models.ForeignKey(Problem, on_delete = models.CASCADE, Null = True )
+
 
 
 class Lessons(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    duration = models.DurationField()
+    date = models.DateTimeField()
+    meeting_link = models.URLField(Null = True)
+
+class Message(models.Model):
+    author = models.ForeignKey(User, on_delete = models.CASCADE)
+    content = models.TextField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add = True)
+
+class Chat(models.Model):
+    participants = models.ManyToManyField(User)
+    messages = models.ManyToManyField(Message, blank = True)
