@@ -1,3 +1,5 @@
+from tokenize import Token
+
 from django.shortcuts import render
 from rest_framework import mixins, status, viewsets
 from rest_framework.authentication import TokenAuthentication
@@ -7,13 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Student, Teacher, User
-from .serializers import StudentProfileSerializer
+from .serializers import StudentProfileSerializer, TeacherProfileSerializer
 
 # Create your views here.
 
-class StudentProfileViewSet(viewsets.ModelViewSet):
-    serializer_class = StudentProfileSerializer
-    queryset = Student.objects.all()
+class UserProfileViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     authentication_classes = [TokenAuthentication]
 
@@ -24,15 +24,26 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     @action(methods= ["POST"], detail = True, url_path = 'upload_image')
     def upload_image(self, request, pk=None):
-        """Upload an image to Student's Profile."""
-        student = self.get_object()
-        serializer = self.get_serializer(student, data = request.data)
+        """Upload an image to User's Profile."""
+        user = self.get_object()
+        serializer = self.get_serializer(user, data = request.data)
 
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status = status.HTTP_200_OK)
         
         return Response(serializer.errors, status = status.HTTP_400_BAD_REQUEST)
+
+class StudentProfileViewSet(UserProfileViewSet):
+    serializer_class = StudentProfileSerializer
+    queryset = Student.objects.all()
+
+
+class TeacherProfileViewSet(UserProfileViewSet):
+    serializer_class = TeacherProfileSerializer
+    queryset = Teacher.objects.all()
+    
+
 
 
 
