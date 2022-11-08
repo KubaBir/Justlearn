@@ -24,9 +24,9 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
     @action(methods= ["POST"], detail = True, url_path = 'upload_image')
     def upload_image(self, request, pk=None):
-        """Upload an image to recipe."""
-        recipe = self.get_object()
-        serializer = self.get_serializer(recipe, data = request.data)
+        """Upload an image to Student's Profile."""
+        student = self.get_object()
+        serializer = self.get_serializer(student, data = request.data)
 
         if serializer.is_valid():
             serializer.save()
