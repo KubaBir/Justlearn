@@ -27,11 +27,11 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/core/', include('core.urls')),
     path('api/chats/', include('chat.urls')),
+    path('api/students/', include('student.urls')),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
-        document_root = settings.MEDIA_ROOT,
+        document_root=settings.MEDIA_ROOT,
     )
-

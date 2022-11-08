@@ -34,16 +34,6 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
         read_only_fields = ['rating']
 
 
-class StudentProfileSerializer(serializers.ModelSerializer):
-    skills = SkillSerializer(many=True)
-    problem_set = ProblemSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Student
-        fields = ['user', 'skills', 'github_link',
-                  'linkedin_link', 'description', 'problem_set']
-
-
 class ProfilePicSerializer(serializers.ModelSerializer):
 
     class Meta:
