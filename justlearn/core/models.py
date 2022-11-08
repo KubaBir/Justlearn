@@ -3,10 +3,9 @@ from email.policy import default
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
 from django.db import models
-from pyexpat import model
 from django.db.models.signals import post_save
-
 from django.dispatch import receiver
+from pyexpat import model
 
 
 # Create your models here.
@@ -42,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    is_student = models.BooleanField(default=True)
+    is_student = models.BooleanField(default=False)
     is_teacher = models.BooleanField(default=False)
     objects = UserManager()
 
@@ -68,69 +67,89 @@ class Skill(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     skills = models.ManyToManyField(Skill)
-    github_link = models.URLField(blank = True, null = True)
-    linkedin_link = models.URLField(blank = True, null = True)
-    description = models.TextField(max_length = 510, default = '')
+    github_link = models.URLField(blank=True, null=True)
+    linkedin_link = models.URLField(blank=True, null=True)
+    description = models.TextField(max_length=510, default='')
 
     def __str__(self):
-        return self.user
+        return self.user.name
 
 
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     # Skills connected with proficiency at which they are
     skills = models.ManyToManyField(Skill)
-    github_link = models.URLField(blank = True, null = True)
-    linkedin_link = models.URLField(blank = True, null =True)
-    description = models.TextField(max_length = 510, default = '')
-    #jak najlepiej zrobic zeby rating sie updatowal po tym jak ktos wydaje opinie
-    rating = models.FloatField(default = 0) 
+    github_link = models.URLField(blank=True, null=True)
+    linkedin_link = models.URLField(blank=True, null=True)
+    description = models.TextField(max_length=510, default='')
+    # jak najlepiej zrobic zeby rating sie updatowal po tym jak ktos wydaje opinie
+    rating = models.FloatField(default=0)
 
     def __str__(self):
-        return self.user
+        return self.user.name
+
 
 class Advertisement(models.Model):
     # na ogloszeniu link z przekierowaniem na konto nauczyciela
-    teacher = models.ForeignKey(Teacher, on_delete = models.CASCADE)
-    description = models.TextField(max_length = 510, default = '')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    description = models.TextField(max_length=510, default='')
+
 
 class Problem(models.Model):
-    #na problemie link z przekierowaniem na konto ucznia
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
-    description = models.TextField(max_length = 510)
+    # na problemie link z przekierowaniem na konto ucznia
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    description = models.TextField(max_length=510)
 
 # Na bazie ofert mozna robic chaty, tak samo na bazie korepetycji
 # oferty jak student odpowiada na ogloszenie i jak nauczyciel odpowiada na problem studenta z oferta wspolpracy
+
+
 class Offer(models.Model):
     name = models.CharField(max_length=255)
-    student = models.ForeignKey(Student, on_delete=models.CASCADE, null = True)
-    teacher = models.ForeignKey(Teacher,on_delete = models.DO_NOTHING, null = True)
-    advertisement = models.ForeignKey(Advertisement, on_delete = models.CASCADE, null = True)
-    problem  = models.ForeignKey(Problem, on_delete = models.CASCADE, null = True )
-
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True)
+    teacher = models.ForeignKey(
+        Teacher, on_delete=models.DO_NOTHING, null=True)
+    advertisement = models.ForeignKey(
+        Advertisement, on_delete=models.CASCADE, null=True)
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE, null=True)
 
 
 class Lessons(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    duration = models.IntegerField(default = 60)
-    date = models.DateTimeField(null = True )
-    meeting_link = models.URLField(null = True)
+    duration = models.IntegerField(default=60)
+    date = models.DateTimeField(null=True)
+    meeting_link = models.URLField(null=True)
+
 
 class Message(models.Model):
-    author = models.ForeignKey(User, on_delete = models.CASCADE)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField(max_length=255)
-    timestamp = models.DateTimeField(auto_now_add = True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.content
+
 
 class Chat(models.Model):
     participants = models.ManyToManyField(User)
-    messages = models.ManyToManyField(Message, blank = True)
+    messages = models.ManyToManyField(Message, blank=True)
 
+    def get_messages(self):
+        res = []
+        for message in self.messages.all():
+            res.append(str(message))
+        return res
 
+    def get_participants(self):
+        res = []
+        for person in self.participants.all():
+            res.append(str(person))
+        return res
 
-@receiver(post_save, sender = User)
-def ProfileCreator(sender, instance= None, **kwargs):
-    if instance.is_student:
-        Student.objects.create(user = instance)
-    if instance.is_teacher:
-        Teacher.objects.create(user = instance)
+# @receiver(post_save, sender=User)
+# def ProfileCreator(sender, instance=None, **kwargs):
+#     if instance.is_student:
+#         Student.objects.create(user=instance)
+#     if instance.is_teacher:
+#         Teacher.objects.create(user=instance)
