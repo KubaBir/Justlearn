@@ -1,5 +1,8 @@
 from rest_framework import serializers
-from .models import Advertisement, Teacher, Student, Skill, Problem
+
+from .models import Advertisement, Problem, Skill, Student, Teacher
+
+
 class SkillSerializer(serializers.ModelSerializer):
     class Meta: 
         model = Skill
@@ -29,4 +32,12 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model  = Student
         fields = ['user','skills','github_link','linkedin_link','description','problem_set']
+
+class ProfilePicSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Student
+        fields = ['id','image']
+        read_only_fields = ['id']
+        extra_kwargs = {'image':{'required':'True' }} 
         
