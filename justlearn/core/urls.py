@@ -5,6 +5,7 @@ from . import views
 
 router = routers.DefaultRouter()
 router.register('Student', views.StudentProfileViewSet)
+router.register('Teacher', views.TeacherProfileViewSet)
 
 app_name = 'core'
 urlpatterns = [

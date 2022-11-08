@@ -1,14 +1,26 @@
+import os
+import profile
+import uuid
 from email.policy import default
 
 from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
                                         PermissionsMixin)
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from pyexpat import model
 
+
+def profile_pic_image_file_path(instance, filename):
+    """Generate file path for new profile pic image"""
+    ext = os.path.splittext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads', 'recipe', filename)
 
 # Create your models here.
+
+
 class UserManager(BaseUserManager):
     """Manager for users"""
 
@@ -70,6 +82,7 @@ class Student(models.Model):
     github_link = models.URLField(blank=True, null=True)
     linkedin_link = models.URLField(blank=True, null=True)
     description = models.TextField(max_length=510, default='')
+    image = models.ImageField(null=True, upload_to=profile_pic_image_file_path)
 
     def __str__(self):
         return self.user.name
@@ -82,7 +95,7 @@ class Teacher(models.Model):
     github_link = models.URLField(blank=True, null=True)
     linkedin_link = models.URLField(blank=True, null=True)
     description = models.TextField(max_length=510, default='')
-    # jak najlepiej zrobic zeby rating sie updatowal po tym jak ktos wydaje opinie
+    image = models.ImageField(null=True, upload_to=profile_pic_image_file_path)
     rating = models.FloatField(default=0)
 
     def __str__(self):
@@ -114,7 +127,7 @@ class Offer(models.Model):
     problem = models.ForeignKey(Problem, on_delete=models.CASCADE, null=True)
 
 
-class Lessons(models.Model):
+class Lesson(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     duration = models.IntegerField(default=60)
@@ -129,6 +142,13 @@ class Message(models.Model):
 
     def __str__(self):
         return self.content
+
+
+class Reviews(models.Model):
+    lessons = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    text = models.TextField(max_length=255)
+    rating = models.IntegerField(default=0, validators=[
+        MinValueValidator(0), MaxValueValidator(10)])
 
 
 class Chat(models.Model):
