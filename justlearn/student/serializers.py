@@ -11,3 +11,11 @@ class StudentProfileSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['user', 'skills', 'github_link',
                   'linkedin_link', 'description', 'problem_set']
+
+class StudentProfilePicSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Student
+        fields = ['id', 'image']
+        read_only_fields = ['id']
+        extra_kwargs = {'image': {'required': 'True'}}

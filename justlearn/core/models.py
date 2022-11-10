@@ -16,9 +16,23 @@ def profile_pic_image_file_path(instance, filename):
     ext = os.path.splittext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads', 'recipe', filename)
+    return os.path.join('uploads', 'profile_pic', filename)
 
+def exercise_file_path(instance, filename):
+    """Generate file path for exercise file"""
+    ext = os.path.splittext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads','exercise',filename)
+
+def project_file_path(instance, filename):
+    """Generate file path for project file"""
+    ext = os.pathsplittext(filename)[1]
+    filename = f'{uuid.uuid4()}{ext}'
+
+    return os.path.join('uploads','project',filename)
 # Create your models here.
+
 
 
 class UserManager(BaseUserManager):
@@ -130,6 +144,8 @@ class Offer(models.Model):
 class Lesson(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    topic = models.CharField(max_length =255, default = '')
+    description = models.TextField(max_length=510, default = '')
     duration = models.IntegerField(default=60)
     date = models.DateTimeField(null=True)
     meeting_link = models.URLField(null=True)
@@ -173,3 +189,14 @@ class Chat(models.Model):
 #         Student.objects.create(user=instance)
 #     if instance.is_teacher:
 #         Teacher.objects.create(user=instance)
+
+
+class Exercise(models.Model):
+    lesson = models.ForeignKey(Lesson, on_delete = models.CASCADE)
+    file= models.FileField(upload_to = exercise_file_path)
+    timestamp = models.DateTimeField(auto_now_add = True)
+
+class Project(models.Model):
+    student = models.ForeignKey(Student, on_delete = models.CASCADE)
+    file = models.FileField(upload_to = project_file_path)
+    timestamp = models.DateTimeField(auto_now_add = True)

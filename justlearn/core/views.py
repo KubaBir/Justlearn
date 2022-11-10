@@ -1,19 +1,31 @@
 from lib2to3.pytree import Base
 from tokenize import Token
 
-from core.serializers import ProfilePicSerializer
+from core.serializers import LessonSerializer
 from django.shortcuts import render
 from rest_framework import mixins, status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.generics import mixins
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import BasePermission, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 
-from .models import Student, Teacher, User
-from .serializers import ProfilePicSerializer, TeacherProfileSerializer
+from .models import Lesson, Student, Teacher, User
 
 # Create your views here.
+
+class LessonPermissions(BasePermission):
+    #czemu to nie dziala??
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_teacher:
+            if request.method in ['GET','POST','PATCH','DELETE']:
+                return obj.teacher.user ==request.user
+            return False
+        if request.user.is_student:
+            if request.method in SAFE_METHODS:
+                return obj.student.user == request.user
+            return False
+        
 
 
 class TeacherPermissions(BasePermission):
@@ -37,7 +49,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 
-    @action(methods=["POST"], detail=True, url_path='upload_image', serializer_class=ProfilePicSerializer)
+    @action(methods=["POST"], detail=True, url_path='upload_image')
     def upload_image(self, request, pk=None):
         """Upload an image to User's Profile."""
         user = self.get_object()
@@ -49,8 +61,20 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+class LessonViewSet(viewsets.ModelViewSet):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [LessonPermissions]
+    querysert = Lesson.objects.all()
+    serializer_class = LessonSerializer
 
-class TeacherProfileViewSet(UserProfileViewSet):
-    permission_classes = [TeacherPermissions]
-    serializer_class = TeacherProfileSerializer
-    queryset = Teacher.objects.all()
+    def get_queryset(self):
+        if self.request.user.is_teacher:
+            qs = Lesson.objects.filter(teacher = Teacher(user = self.request.user)).all()
+        else:
+            qs = Lesson.objects.filter(student = Student(user = self.request.user)).all()
+        return qs
+    
+
+
+
+

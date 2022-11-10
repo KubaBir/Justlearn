@@ -28,6 +28,7 @@ urlpatterns = [
     path('api/core/', include('core.urls')),
     path('api/chats/', include('chat.urls')),
     path('api/students/', include('student.urls')),
+    path('api/teachers/',include('teacher.urls'))
 ]
 
 if settings.DEBUG:
