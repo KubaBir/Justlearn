@@ -1,3 +1,4 @@
+from datetime import date as dt
 from lib2to3.pytree import Base
 from tokenize import Token
 
@@ -27,6 +28,8 @@ class LessonPermissions(BasePermission):
             return True
         else:
             return request.user.is_teacher
+
+    
         
          
 class ProblemPermissions(BasePermission):
@@ -102,10 +105,16 @@ class LessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_teacher:
-            qs = Lesson.objects.filter(teacher = Teacher.objects.get(user = self.request.user)).all()
-        if self.request.user.is_student:
-            qs = Lesson.objects.filter(student = Student.objects.get(user = self.request.user)).all()
+            qs = Lesson.objects.filter(teacher = Teacher.objects.get(user = self.request.user)).filter(lesson_date > dt.today()).all()
+            #czemu nie czyta lesson_date
+        if self.request.user.is_student: 
+            qs = Lesson.objects.filter(student = Student.objects.get(user = self.request.user)).filter(lesson_date>dt.today()).all()
         return qs
+    #@action(methods = ["GET"], detail = False)
+    #tu trzeba dokonczyc
+    #def previous_lessons(self,request):
+        #tu trzeba odwolac do qs i filter lesson_date < dt.today() + ustawic zeby celery usuwalo lekcje starsze niz np tydzien.
+
     
 class ProblemViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]

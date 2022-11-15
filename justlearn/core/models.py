@@ -147,7 +147,7 @@ class Lesson(models.Model):
     topic = models.CharField(max_length =255, default = '')
     description = models.TextField(max_length=510, default = '')
     duration = models.IntegerField(default=60)
-    date = models.DateTimeField(null=True)
+    lesson_date = models.DateTimeField(null = True )
     meeting_link = models.URLField(null=True)
 
 
