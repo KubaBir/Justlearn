@@ -1,8 +1,9 @@
-from django.shortcuts import render
-from core.views import UserProfileViewSet
-from core.views import TeacherPermissions
-from .serializers import TeacherProfileSerializer, TeacherProfilePicSerializer
 from core.models import Teacher
+from core.views import TeacherPermissions, UserProfileViewSet
+from django.shortcuts import render
+
+from .serializers import TeacherProfilePicSerializer, TeacherProfileSerializer
+
 # Create your views here.
 
 class TeacherProfileViewSet(UserProfileViewSet):
@@ -12,7 +13,7 @@ class TeacherProfileViewSet(UserProfileViewSet):
 
     def get_serializer_class(self):
         if self.action == 'upload_image':
-            return TeacherProfileSerializer
-        else:
             return TeacherProfilePicSerializer
+        else:
+            return TeacherProfileSerializer
     

@@ -10,7 +10,7 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = ['user', 'skills', 'github_link',
-                  'linkedin_link', 'description', 'problem_set']
+                  'linkedin_link', 'description', 'problem_set','image']
 
 class StudentProfilePicSerializer(serializers.ModelSerializer):
 

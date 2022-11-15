@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from .models import Advertisement, Exercise, Lesson, Problem, Skill, Student, Teacher
+from .models import (Advertisement, Exercise, Lesson, Problem, Skill, Student,
+                     Teacher)
 
 
 class SkillSerializer(serializers.ModelSerializer):
@@ -14,13 +15,15 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = '__all__'
+        read_only_fields = ('id','teacher')
 
 
 class ProblemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Problem
-        fields = '__all__'
+        fields = ['id','student','description']
+        read_only_fields = ('id','student')
 
 
 class TeacherProfilePicSerializer(serializers.ModelSerializer):

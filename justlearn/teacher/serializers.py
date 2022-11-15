@@ -1,6 +1,7 @@
-from rest_framework import serializers
-from core.serializers import SkillSerializer, AdvertisementSerializer
 from core.models import Teacher
+from core.serializers import AdvertisementSerializer, SkillSerializer
+from rest_framework import serializers
+
 
 class TeacherProfileSerializer(serializers.ModelSerializer):
     skills = SkillSerializer(many=True)
@@ -9,7 +10,7 @@ class TeacherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Teacher
         fields = ['user', 'skills', 'github_link', 'linkedin_link',
-                  'description', 'rating', 'advertisement_set']
+                  'description', 'rating', 'advertisement_set','image']
         read_only_fields = ['rating']
 
 class TeacherProfilePicSerializer(serializers.ModelSerializer):

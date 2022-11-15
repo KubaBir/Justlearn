@@ -1,7 +1,7 @@
 from core.models import Student
-from core.views import UserProfileViewSet
-from core.views import StudentPermissions
-from .serializers import StudentProfileSerializer, StudentProfilePicSerializer
+from core.views import StudentPermissions, UserProfileViewSet
+
+from .serializers import StudentProfilePicSerializer, StudentProfileSerializer
 
 
 class StudentProfileViewSet(UserProfileViewSet):
