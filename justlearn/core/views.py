@@ -21,17 +21,15 @@ class LessonPermissions(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in SAFE_METHODS:
             return obj.student == Student.objects.get(user=request.user)
-        return obj.teacher ==Teacher.objects.get(user=request.user)
+        return obj.teacher == Teacher.objects.get(user=request.user)
 
     def has_permission(self, request, view):
-        if request.method  in SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
         else:
             return request.user.is_teacher
 
-    
-        
-         
+
 class ProblemPermissions(BasePermission):
 
     def has_object_permission(self, request, view, obj):
@@ -39,15 +37,14 @@ class ProblemPermissions(BasePermission):
             return True
         else:
             return obj.student == Student.objects.get(user=request.user)
-        
 
     def has_permission(self, request, view):
-        if request.method  in SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
         else:
             return request.user.is_student
-               
-        
+
+
 class AdvertisementPermissions(BasePermission):
 
     def has_object_permission(self, request, view, obj):
@@ -55,14 +52,13 @@ class AdvertisementPermissions(BasePermission):
             return True
         else:
             return obj.teacher == Teacher.objects.get(user=request.user)
-        
 
     def has_permission(self, request, view):
-        if request.method  in SAFE_METHODS:
+        if request.method in SAFE_METHODS:
             return True
         else:
             return request.user.is_teacher
-               
+
 
 class TeacherPermissions(BasePermission):
     def has_permission(self, request, view):
@@ -97,6 +93,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class LessonViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [LessonPermissions]
@@ -105,26 +102,28 @@ class LessonViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_teacher:
-            qs = Lesson.objects.filter(teacher = Teacher.objects.get(user = self.request.user)).filter(lesson_date > dt.today()).all()
-            #czemu nie czyta lesson_date
-        if self.request.user.is_student: 
-            qs = Lesson.objects.filter(student = Student.objects.get(user = self.request.user)).filter(lesson_date>dt.today()).all()
+            qs = Lesson.objects.filter(teacher=Teacher.objects.get(
+                user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
+            # czemu nie czyta lesson_date
+        if self.request.user.is_student:
+            qs = Lesson.objects.filter(student=Student.objects.get(
+                user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
         return qs
-    #@action(methods = ["GET"], detail = False)
-    #tu trzeba dokonczyc
-    #def previous_lessons(self,request):
-        #tu trzeba odwolac do qs i filter lesson_date < dt.today() + ustawic zeby celery usuwalo lekcje starsze niz np tydzien.
+    # @action(methods = ["GET"], detail = False)
+    # tu trzeba dokonczyc
+    # def previous_lessons(self,request):
+        # tu trzeba odwolac do qs i filter lesson_date < dt.today() + ustawic zeby celery usuwalo lekcje starsze niz np tydzien.
 
-    
+
 class ProblemViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
     permission_classes = [ProblemPermissions]
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
 
-
     def perform_create(self, serializer):
         serializer.save(student=Student.objects.get(user=self.request.user))
+
 
 class AdvertisementViewSet(viewsets.ModelViewSet):
     authentication_classes = [TokenAuthentication]
@@ -134,11 +133,3 @@ class AdvertisementViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(teacher=Teacher.objects.get(user=self.request.user))
-
-
-
-
-
-    
-
-

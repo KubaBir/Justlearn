@@ -15,15 +15,15 @@ class AdvertisementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Advertisement
         fields = '__all__'
-        read_only_fields = ('id','teacher')
+        read_only_fields = ('id', 'teacher')
 
 
 class ProblemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Problem
-        fields = ['id','student','description']
-        read_only_fields = ('id','student')
+        fields = ['id', 'student', 'description']
+        read_only_fields = ('id', 'student')
 
 
 class TeacherProfilePicSerializer(serializers.ModelSerializer):
@@ -35,16 +35,18 @@ class TeacherProfilePicSerializer(serializers.ModelSerializer):
         extra_kwargs = {'image': {'required': 'True'}}
 
 
-
 class ExerciseSerializer(serializers.ModelSerializer):
-    
-    class Meta: 
+
+    class Meta:
         model = Exercise
-        fields = ['id','lesson','file','timestamp']
-        read_only_fields = ('id','timestamp')
+        fields = ['id', 'lesson', 'file', 'timestamp']
+        read_only_fields = ('id', 'timestamp')
+
 
 class LessonSerializer(serializers.ModelSerializer):
-    exercise_set = ExerciseSerializer(many=True, read_only = True)
+    exercise_set = ExerciseSerializer(many=True, read_only=True)
+
     class Meta:
         model = Lesson
-        fields = ['id','student','teacher','duration','date','meeting_link','topic','description','exercise_set']
+        fields = ['id', 'student', 'teacher', 'duration', 'lesson_date',
+                  'meeting_link', 'topic', 'description', 'exercise_set']

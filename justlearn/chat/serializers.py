@@ -1,5 +1,5 @@
 from attr import fields
-from core.models import Chat, Message
+from core.models import Chat, Message, User
 from rest_framework import serializers
 
 
@@ -27,3 +27,13 @@ class ChatDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
         fields = ['id', 'participants', 'messages']
+
+
+class ChatCreateSerializer(serializers.Serializer):
+    invitations = serializers.ListField(child=serializers.CharField())
+
+    def validate_invitations(self, field):
+        print(field)
+        for inv in field:
+            if not User.objects.filter(name=inv).count() == 1:
+                raise serializers.ValidationError(f"User {inv} not found")
