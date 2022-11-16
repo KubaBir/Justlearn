@@ -18,6 +18,7 @@ class ChatSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chat
         fields = ['id', 'participants']
+        read_only_fields = ['id', 'participants']
 
 
 class ChatDetailSerializer(serializers.ModelSerializer):
@@ -30,10 +31,20 @@ class ChatDetailSerializer(serializers.ModelSerializer):
 
 
 class ChatCreateSerializer(serializers.Serializer):
-    invitations = serializers.ListField(child=serializers.CharField())
+    invitations = serializers.ListField()
 
     def validate_invitations(self, field):
-        print(field)
         for inv in field:
             if not User.objects.filter(name=inv).count() == 1:
                 raise serializers.ValidationError(f"User {inv} not found")
+        return field
+
+
+class ChatAddUserSerializer(serializers.Serializer):
+    users = serializers.ListField()
+
+    def validate_users(self, field):
+        for user in field:
+            if not User.objects.filter(name=user).count() == 1:
+                raise serializers.ValidationError(f"User {user} not found")
+        return field
