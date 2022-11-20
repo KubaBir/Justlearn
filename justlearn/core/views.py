@@ -104,7 +104,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         if self.request.user.is_teacher:
             qs = Lesson.objects.filter(teacher=Teacher.objects.get(
                 user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
-            # czemu nie czyta lesson_date
+            # o to sie spytac 
         if self.request.user.is_student:
             qs = Lesson.objects.filter(student=Student.objects.get(
                 user=self.request.user)).filter(lesson_date__gt=dt.today()).all()

@@ -1,4 +1,6 @@
 from core.models import Chat, Message, User
+from django.conf import settings
+from django.core.mail import send_mail
 from rest_framework import mixins, status, views, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
@@ -59,8 +61,10 @@ class ChatViewSet(
             for inv in serializer.data['invitations']:
                 user = User.objects.get(name=inv)
                 chat.participants.add(user)
-            chat.save()
+                send_mail('You have been invited to a chat - Juslearn!', f'Hi {user.name}, {request.user.name} has started a chat with you ',settings.DEFAULT_FROM_EMAIL, user.email)
+            chat.save
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=['POST'], detail=True)
@@ -72,6 +76,7 @@ class ChatViewSet(
                 if user not in chat.get_participants():
                     user = User.objects.get(name=user)
                     chat.participants.add(user)
+                    send_mail('You have been added to a chat - Juslearn!', f'Hi {user.name}, {request.user.name} has added you to a chat  ',settings.DEFAULT_FROM_EMAIL, user.email)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
