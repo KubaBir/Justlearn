@@ -62,14 +62,15 @@ class AdvertisementPermissions(BasePermission):
 
 class TeacherPermissions(BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_teacher:
+        if request.user.is_authenticated and request.user.is_teacher:
             return True
 
 
 class StudentPermissions(BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_student:
+        if request.user.is_authenticated and request.user.is_student:
             return True
+        return False
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -104,7 +105,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         if self.request.user.is_teacher:
             qs = Lesson.objects.filter(teacher=Teacher.objects.get(
                 user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
-            # o to sie spytac 
+            # o to sie spytac
         if self.request.user.is_student:
             qs = Lesson.objects.filter(student=Student.objects.get(
                 user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
