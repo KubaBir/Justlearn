@@ -164,6 +164,10 @@ EMAIL_HOST_USER = 'user'
 EMAIL_HOST_PASSWORD = 'eekywgotliwspyaf'
 DEFAULT_FROM_EMAIL = 'kudlacz.gaming@gmail.com'
 
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get("CELERY_BROKER", "redis://redis:6379/0")
+
+
 SPECTACULAR_SETTINGS = {
     'COMPONENT_SPLIT_REQUEST': True,
 }

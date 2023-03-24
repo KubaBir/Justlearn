@@ -110,9 +110,8 @@ class LessonViewSet(viewsets.ModelViewSet):
                 user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
         return qs
     # @action(methods = ["GET"], detail = False)
-    # tu trzeba dokonczyc
     # def previous_lessons(self,request):
-        # tu trzeba odwolac do qs i filter lesson_date < dt.today() + ustawic zeby celery usuwalo lekcje starsze niz np tydzien.
+        
 
 
 class ProblemViewSet(viewsets.ModelViewSet):

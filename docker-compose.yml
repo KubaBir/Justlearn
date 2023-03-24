@@ -2,6 +2,22 @@ version: "3.9"
 
 
 services:
+
+  redis:
+    image: redis:7-alpine
+  
+  celery_worker:
+    build:
+      context: .
+    command: celery -A app worker -l INFO
+    volumes:
+      - ./justlearn:/justlearn
+    env_file:
+      - ./.env/.dev-sample
+    depends_on:
+      - redis
+      - app
+
   app:
     build:
       context: .
