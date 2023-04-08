@@ -78,7 +78,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(methods=["GET", "PATCH"], detail=False)
     def my_profile(self, request):
-        obj = Student.objects.filter(user=self.request.user).get()
+        if self.request.user.is_student:
+            obj = Student.objects.filter(user=self.request.user).get()
+        else:
+            obj = Teacher.objects.filter(user = self.request.user).get()
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 

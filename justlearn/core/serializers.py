@@ -30,7 +30,7 @@ class ProblemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Problem
-        fields = ['id', 'title','student','link' 'description']
+        fields = ['id', 'title','student','link','description']
         read_only_fields = ('id', 'student','link')
 
     def create(self, validated_data):

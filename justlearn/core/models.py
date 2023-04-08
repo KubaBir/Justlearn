@@ -115,16 +115,16 @@ class Teacher(models.Model):
 
 
 class Advertisement(models.Model):
-    title = models.CharField(max_length = 255)
+    title = models.CharField(max_length = 255, null = True)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    link = models.URLField()
+    link = models.URLField(default = None)
     description = models.TextField(max_length=510, default='')
 
 
 class Problem(models.Model):
-    title = models.CharField(max_length = 255)
+    title = models.CharField(max_length = 255, null = True)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    link = models.URLField()
+    link = models.URLField(default = None)
     description = models.TextField(max_length=510)
 
 # Na bazie ofert mozna robic chaty, tak samo na bazie korepetycji
@@ -183,12 +183,6 @@ class Chat(models.Model):
             res.append(str(person))
         return res
 
-@receiver(post_save, sender=User)
-def ProfileCreator(sender, instance=None, **kwargs):
-     if instance.is_student:
-         Student.objects.create(user=instance)
-     if instance.is_teacher:
-         Teacher.objects.create(user=instance)
 
 
 
