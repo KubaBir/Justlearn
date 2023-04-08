@@ -85,10 +85,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(obj)
         return Response(serializer.data)
 
-    @action(methods=["POST"], detail=True, url_path='upload_image')
-    def upload_image(self, request, pk=None):
+    @action(methods=["POST"], detail= False, url_path='upload_image')
+    def upload_image(self, request):
         """Upload an image to User's Profile."""
-        user = self.get_object()
+        user = User.objects.get(id = self.request.user.id)
         serializer = self.get_serializer(user, data=request.data)
 
         if serializer.is_valid():
