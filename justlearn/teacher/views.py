@@ -6,6 +6,7 @@ from .serializers import TeacherProfilePicSerializer, TeacherProfileSerializer
 
 # Create your views here.
 
+
 class TeacherProfileViewSet(UserProfileViewSet):
     permission_classes = [TeacherPermissions]
     serializer_class = TeacherProfileSerializer
@@ -16,4 +17,3 @@ class TeacherProfileViewSet(UserProfileViewSet):
             return TeacherProfilePicSerializer
         else:
             return TeacherProfileSerializer
-    

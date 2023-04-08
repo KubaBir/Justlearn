@@ -7,7 +7,7 @@ router = routers.DefaultRouter()
 #router.register('lessons',views.LessonViewSet, basename = 'lessons')
 router.register('problems', views.ProblemViewSet)
 router.register('advertisements', views.AdvertisementViewSet)
-app_name = 'core'
+app_name = 'main_page'
 urlpatterns = [
     path('', include(router.urls))
 ]

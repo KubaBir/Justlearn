@@ -11,19 +11,33 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class AdvertisementSerializer(serializers.ModelSerializer):
+    #jak tutaj dodac zeby link sie tworzyl odrazu api/teachers{id}
+
 
     class Meta:
         model = Advertisement
-        fields = '__all__'
-        read_only_fields = ('id', 'teacher')
+        fields = ['id','title','teacher','link','description']
+        read_only_fields = ('id', 'teacher','link')
+
+    def create(self, validated_data):
+        link = f"api/teachers/{super.request.user.id}"
+        advertisement  = Advertisement.model.objects.create(link, **validated_data)
+        return advertisement
 
 
 class ProblemSerializer(serializers.ModelSerializer):
+    #jak tutaj dodac zeby link sie tworzyl odrazu api/students{id}
 
     class Meta:
         model = Problem
-        fields = ['id', 'student', 'description']
-        read_only_fields = ('id', 'student')
+        fields = ['id', 'title','student','link' 'description']
+        read_only_fields = ('id', 'student','link')
+
+    def create(self, validated_data):
+        link = f"api/students/{super.request.user.id}"
+        problem  =Problem.model.objects.create(link, **validated_data)
+        return Problem
+
 
 
 class TeacherProfilePicSerializer(serializers.ModelSerializer):

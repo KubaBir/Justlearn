@@ -31,8 +31,6 @@ def project_file_path(instance, filename):
     filename = f'{uuid.uuid4()}{ext}'
 
     return os.path.join('uploads','project',filename)
-# Create your models here.
-
 
 
 class UserManager(BaseUserManager):
@@ -117,14 +115,16 @@ class Teacher(models.Model):
 
 
 class Advertisement(models.Model):
-    # na ogloszeniu link z przekierowaniem na konto nauczyciela
+    title = models.CharField(max_length = 255)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    link = models.URLField()
     description = models.TextField(max_length=510, default='')
 
 
 class Problem(models.Model):
-    # na problemie link z przekierowaniem na konto ucznia
+    title = models.CharField(max_length = 255)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    link = models.URLField()
     description = models.TextField(max_length=510)
 
 # Na bazie ofert mozna robic chaty, tak samo na bazie korepetycji
@@ -183,12 +183,14 @@ class Chat(models.Model):
             res.append(str(person))
         return res
 
-# @receiver(post_save, sender=User)
-# def ProfileCreator(sender, instance=None, **kwargs):
-#     if instance.is_student:
-#         Student.objects.create(user=instance)
-#     if instance.is_teacher:
-#         Teacher.objects.create(user=instance)
+@receiver(post_save, sender=User)
+def ProfileCreator(sender, instance=None, **kwargs):
+     if instance.is_student:
+         Student.objects.create(user=instance)
+     if instance.is_teacher:
+         Teacher.objects.create(user=instance)
+
+
 
 
 class Exercise(models.Model):

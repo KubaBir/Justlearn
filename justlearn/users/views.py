@@ -1,10 +1,34 @@
 from rest_framework import authentication, generics, permissions
 from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.permissions import BasePermission
 from rest_framework.settings import api_settings
 
 from . import serializers
 
+
 # Create your views here.
+class IsTeacher(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_teacher:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_teacher:
+            return True
+        return False
+
+
+class IsStudent(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_student:
+            return True
+        return False
+
+    def has_object_permission(self, request, view, obj):
+        if request.user.is_student:
+            return True
+        return False
 
 
 class CreateUserView(generics.CreateAPIView):

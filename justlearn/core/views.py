@@ -104,15 +104,33 @@ class LessonViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.user.is_teacher:
             qs = Lesson.objects.filter(teacher=Teacher.objects.get(
-                user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
-            # o to sie spytac
+                user=self.request.user)).all()
         if self.request.user.is_student:
             qs = Lesson.objects.filter(student=Student.objects.get(
-                user=self.request.user)).filter(lesson_date__gt=dt.today()).all()
+                user=self.request.user)).all()
         return qs
-    # @action(methods = ["GET"], detail = False)
-    # def previous_lessons(self,request):
-        
+    @action(methods = ["GET"], detail = False)
+    def my_lessons(self,request):
+        ids=[]
+        for el in self.get_queryset():
+            if el.lesson_date >= dt.today():
+                ids.append(el.id)
+        queryset = self.get_queryset().filter(id__in = ids)
+        serializer = self.get_serializer(queryset, many = True)
+        return Response(serializer.data)
+
+    @action(methods = ["GET"], detail = False)
+    def my_past_lessons(self,request):
+        ids = []
+        for el in self.get_queryset():
+            if el.lesson_date <dt.today():
+                ids.appebd(el.id)
+        queryset = self.get_queryset().filter(id__in = ids)
+        serializer = self.get_serializer(queryset, many = True)
+        return Response(serializer.data)
+
+
+
 
 
 class ProblemViewSet(viewsets.ModelViewSet):

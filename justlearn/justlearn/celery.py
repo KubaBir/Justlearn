@@ -13,6 +13,6 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'every-hour':{
         'task': 'core.tasks.remove_old_lessons_from_db',
-        'schedule': timedelta(seconds=30)
+        'schedule': timedelta(days=1)
     }
 }
