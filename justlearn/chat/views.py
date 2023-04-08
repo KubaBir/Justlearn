@@ -76,8 +76,6 @@ class ChatViewSet(
                 if user not in chat.get_participants():
                     user = User.objects.get(name=user)
                     chat.participants.add(user)
-                    send_mail('You have been added to a chat - Juslearn!',
-                              f'Hi {user.name}, {request.user.name} has added you to a chat  ', settings.DEFAULT_FROM_EMAIL, user.email)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

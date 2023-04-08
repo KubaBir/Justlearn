@@ -9,7 +9,7 @@ from .serializers import TeacherProfilePicSerializer, TeacherProfileSerializer
 
 class TeacherProfileViewSet(UserProfileViewSet):
     permission_classes = [TeacherPermissions]
-    serializer_class = TeacherProfileSerializer
+    serializer_class = [TeacherProfileSerializer]
     queryset = Teacher.objects.all()
 
     def get_serializer_class(self):
