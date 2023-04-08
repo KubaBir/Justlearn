@@ -26,7 +26,6 @@ class ChatViewSet(
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     queryset = Chat.objects.all()
-    serializer_class = serializers.ChatSerializer
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -61,9 +60,9 @@ class ChatViewSet(
             for inv in serializer.data['invitations']:
                 user = User.objects.get(name=inv)
                 chat.participants.add(user)
-                send_mail('You have been invited to a chat - Juslearn!',
-                          f'Hi {user.name}, {request.user.name} has started a chat with you ', settings.DEFAULT_FROM_EMAIL, user.email)
-            chat.save
+                # send_mail('You have been invited to a chat - Juslearn!',
+                #           f'Hi {user.name}, {request.user.name} has started a chat with you ', settings.DEFAULT_FROM_EMAIL, [user.email])
+            chat.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -85,7 +84,5 @@ class ChatViewSet(
     @action(methods=['POST'], detail=True)
     def leave(self, request, pk=None):
         chat = self.get_object()
-        # serializer = self.get_serializer(data=request.data)
-        # if serializer.is_valid():
         chat.participants.remove(self.request.user)
         return Response({"Success"}, status=status.HTTP_200_OK)

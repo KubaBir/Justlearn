@@ -18,19 +18,21 @@ def profile_pic_image_file_path(instance, filename):
 
     return os.path.join('uploads', 'profile_pic', filename)
 
+
 def exercise_file_path(instance, filename):
     """Generate file path for exercise file"""
     ext = os.path.splittext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads','exercise',filename)
+    return os.path.join('uploads', 'exercise', filename)
+
 
 def project_file_path(instance, filename):
     """Generate file path for project file"""
     ext = os.pathsplittext(filename)[1]
     filename = f'{uuid.uuid4()}{ext}'
 
-    return os.path.join('uploads','project',filename)
+    return os.path.join('uploads', 'project', filename)
 
 
 class UserManager(BaseUserManager):
@@ -115,14 +117,14 @@ class Teacher(models.Model):
 
 
 class Advertisement(models.Model):
-    title = models.CharField(max_length = 255)
+    title = models.CharField(max_length=255)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
     link = models.URLField()
     description = models.TextField(max_length=510, default='')
 
 
 class Problem(models.Model):
-    title = models.CharField(max_length = 255)
+    title = models.CharField(max_length=255)
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     link = models.URLField()
     description = models.TextField(max_length=510)
@@ -144,10 +146,10 @@ class Offer(models.Model):
 class Lesson(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
-    topic = models.CharField(max_length =255, default = '')
-    description = models.TextField(max_length=510, default = '')
+    topic = models.CharField(max_length=255, default='')
+    description = models.TextField(max_length=510, default='')
     duration = models.IntegerField(default=60)
-    lesson_date = models.DateTimeField(null = True )
+    lesson_date = models.DateTimeField(null=True)
     meeting_link = models.URLField(null=True)
 
 
@@ -183,22 +185,14 @@ class Chat(models.Model):
             res.append(str(person))
         return res
 
-@receiver(post_save, sender=User)
-def ProfileCreator(sender, instance=None, **kwargs):
-     if instance.is_student:
-         Student.objects.create(user=instance)
-     if instance.is_teacher:
-         Teacher.objects.create(user=instance)
-
-
-
 
 class Exercise(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete = models.CASCADE)
-    file= models.FileField(upload_to = exercise_file_path)
-    timestamp = models.DateTimeField(auto_now_add = True)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=exercise_file_path)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
 
 class Project(models.Model):
-    student = models.ForeignKey(Student, on_delete = models.CASCADE)
-    file = models.FileField(upload_to = project_file_path)
-    timestamp = models.DateTimeField(auto_now_add = True)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    file = models.FileField(upload_to=project_file_path)
+    timestamp = models.DateTimeField(auto_now_add=True)

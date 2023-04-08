@@ -1,4 +1,3 @@
-from attr import fields
 from core.models import Chat, Message, User
 from rest_framework import serializers
 
