@@ -1,4 +1,12 @@
 # Justlearn
+## Used technologies:
+- Python
+- Django
+- Docker
+- Celery
+- Redis
+- PostgreSQL
+- Django Rest Framework
 ## Backend project of programming private lessons website.
 This project containts full rest api for website enabling teachers and students to connect in order to learn programming. It handles:
 - Creating custom users
