@@ -10,7 +10,7 @@
 - PostgreSQL
 - Django Rest Framework
 
-##Project handles:
+## Project handles:
 - Creating custom users
 - Authenticating users
 - Crating Teacher/Student profiles based on information while registering a user.
