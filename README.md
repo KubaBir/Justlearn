@@ -10,7 +10,7 @@
 - PostgreSQL
 - Django Rest Framework
 
-This project containts full rest api for website enabling teachers and students to connect in order to learn programming. It handles:
+Project handles:
 - Creating custom users
 - Authenticating users
 - Crating Teacher/Student profiles based on information while registering a user.
