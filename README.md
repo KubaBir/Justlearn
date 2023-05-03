@@ -13,7 +13,7 @@
 ### Project handles:
 - Creating custom users
 - Authenticating users
-- Crating Teacher/Student profiles based on information while registering a user.
+- Creating Teacher/Student profiles based on information while registering a user.
 - Chat system
 - Custom permissions system
 - Celery tasks 
